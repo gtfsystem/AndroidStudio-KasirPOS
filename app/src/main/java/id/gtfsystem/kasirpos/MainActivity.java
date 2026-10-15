@@ -91,7 +91,7 @@ public class MainActivity extends Activity {
         LinearLayout top=new LinearLayout(this);top.setOrientation(LinearLayout.HORIZONTAL);
         top.setGravity(Gravity.CENTER_VERTICAL);top.setPadding(dp(10),dp(8),dp(10),dp(8));
         top.setBackgroundColor(Color.rgb(248,250,254));
-        TextView heading=new TextView(this);heading.setText("KasirPOS V10.4");heading.setTextColor(NAVY);
+        TextView heading=new TextView(this);heading.setText("KasirPOS V10.5");heading.setTextColor(NAVY);
         heading.setTextSize(17);heading.setTypeface(null,Typeface.BOLD);
         top.addView(heading,new LinearLayout.LayoutParams(0,dp(42),1));
         connectionLabel=new TextView(this);connectionLabel.setTextSize(12);
@@ -99,13 +99,9 @@ public class MainActivity extends Activity {
         top.addView(connectionLabel,new LinearLayout.LayoutParams(dp(82),dp(42)));
         root.addView(top,new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,dp(58)));
         web=new WebView(this);root.addView(web,new LinearLayout.LayoutParams(-1,0,1));
-        LinearLayout bottom=new LinearLayout(this);bottom.setGravity(Gravity.CENTER);
-        bottom.setPadding(dp(6),dp(6),dp(6),dp(8));bottom.setBackgroundColor(Color.rgb(248,250,254));
-        Button home=button("Kasir",BLUE),reload=button("Muat ulang",NAVY),sync=button("Sinkron",Color.rgb(17,117,100)),settings=button("Server ⚙",Color.rgb(132,55,168));
-        for(Button b:new Button[]{home,reload,sync,settings}) {
-            LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(0,dp(52),1);p.setMargins(dp(2),0,dp(2),0);bottom.addView(b,p);
-        }
-        root.addView(bottom,new LinearLayout.LayoutParams(-1,dp(70)));setContentView(root);
+        Button toolsButton=button("⋮",Color.rgb(53,96,81));
+        top.addView(toolsButton,new LinearLayout.LayoutParams(dp(54),dp(44)));
+        setContentView(root);
         WebSettings s=web.getSettings();s.setJavaScriptEnabled(true);s.setDomStorageEnabled(true);
         s.setDatabaseEnabled(true);s.setCacheMode(WebSettings.LOAD_DEFAULT);
         s.setAllowFileAccess(false);s.setAllowContentAccess(false);
@@ -124,10 +120,14 @@ public class MainActivity extends Activity {
             }
             @Override public void onPageFinished(WebView view,String url){updateConnection();}
         });
-        home.setOnClickListener(v->web.loadUrl(currentUrl));
-        reload.setOnClickListener(v->{updateConnection();web.reload();});
-        sync.setOnClickListener(v->{new NativeBridge(this).syncNow();Toast.makeText(this,"Sinkronisasi dijadwalkan",Toast.LENGTH_SHORT).show();});
-        settings.setOnClickListener(v->showServerDialog());
+        toolsButton.setOnClickListener(v->new AlertDialog.Builder(this)
+            .setTitle("Menu Aplikasi")
+            .setItems(new String[]{"Kasir","Muat ulang","Sinkronkan","Pengaturan Server (Admin)"},(d,which)->{
+                if(which==0)web.loadUrl(currentUrl);
+                else if(which==1)web.reload();
+                else if(which==2){new NativeBridge(this).syncNow();Toast.makeText(this,"Sinkronisasi dijadwalkan",Toast.LENGTH_SHORT).show();}
+                else showServerDialog();
+            }).setNegativeButton("Tutup",null).show());
         updateConnection();web.loadUrl(currentUrl);
     }
     private void showServerDialog(){
