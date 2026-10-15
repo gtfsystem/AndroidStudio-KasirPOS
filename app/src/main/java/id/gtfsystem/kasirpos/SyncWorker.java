@@ -19,7 +19,7 @@ public class SyncWorker extends Worker {
     @NonNull @Override public Result doWork() {
         try {
             JSONArray orders=NativeOutbox.read(getApplicationContext());
-            Uri base=Uri.parse(BuildConfig.POS_URL);
+            Uri base=Uri.parse(getApplicationContext().getSharedPreferences("kasir_server_v104",0).getString("server_url", BuildConfig.POS_URL));
             Uri api=base.buildUpon().path(base.getPath().substring(0,base.getPath().lastIndexOf('/')+1)+"api.php")
                 .encodedQuery("action=create_order").build();
             if(!"https".equalsIgnoreCase(api.getScheme())) return Result.failure();
