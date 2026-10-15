@@ -40,6 +40,6 @@ jobs:
         run: gradle --no-daemon :app:assembleDebug --stacktrace
       - uses: actions/upload-artifact@v4
         with:
-          name: KasirPOS-V10.5-debug-apk
+          name: KasirPOS-V10.8-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
